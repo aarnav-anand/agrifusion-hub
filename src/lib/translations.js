@@ -88,8 +88,12 @@ export const translations = {
     verify: 'Verify',
     verified: 'Verified',
     notVerified: 'Not Verified',
+    rejectVerification: 'Reject Verification',
+    rejected: 'Rejected',
+    reopenVerification: 'Re-verify',
     enterDifFirst: 'Please enter a DIF code first.',
     noFarmersFound: 'No farmers found.',
+    rejectedNotice: 'Your account verification request was rejected by the admin. Please contact support.',
 
     // Admin — Carts
     cartRequests: 'Cart Requests',
@@ -198,8 +202,12 @@ export const translations = {
     verify: 'सत्यापित करें',
     verified: 'सत्यापित',
     notVerified: 'सत्यापित नहीं',
+    rejectVerification: 'अस्वीकार करें',
+    rejected: 'अस्वीकृत',
+    reopenVerification: 'पुनः सत्यापित करें',
     enterDifFirst: 'कृपया पहले DIF कोड दर्ज करें।',
     noFarmersFound: 'कोई किसान नहीं मिला।',
+    rejectedNotice: 'आपका खाता सत्यापन अनुरोध एडमिन द्वारा अस्वीकृत कर दिया गया है। कृपया सहायता टीम से संपर्क करें।',
 
     // Admin — Carts
     cartRequests: 'कार्ट अनुरोध',

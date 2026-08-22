@@ -7,9 +7,10 @@
 -- ── STEP 1: Add new columns to existing farmers table ────────
 -- These have safe defaults so existing rows keep working as-is.
 
-ALTER TABLE farmers ADD COLUMN IF NOT EXISTS role         text    DEFAULT 'farmer';
-ALTER TABLE farmers ADD COLUMN IF NOT EXISTS is_verified  boolean DEFAULT false;
-ALTER TABLE farmers ADD COLUMN IF NOT EXISTS password_hash text;
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS role                text    DEFAULT 'farmer';
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS is_verified         boolean DEFAULT false;
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS verification_status text    DEFAULT 'pending';
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS password_hash       text;
 
 -- Ensure dif_code defaults to empty string and drops NOT NULL constraint if present
 ALTER TABLE farmers ALTER COLUMN dif_code DROP NOT NULL;

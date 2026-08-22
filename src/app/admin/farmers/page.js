@@ -53,16 +53,38 @@ export default function AdminFarmersPage() {
 
     const { error } = await supabase
       .from('farmers')
-      .update({ is_verified: true, dif_code: dif })
+      .update({ is_verified: true, verification_status: 'verified', dif_code: dif })
       .eq('id', farmer.id);
 
     if (!error) {
       setFarmers((prev) =>
         prev.map((f) =>
-          f.id === farmer.id ? { ...f, is_verified: true, dif_code: dif } : f
+          f.id === farmer.id ? { ...f, is_verified: true, verification_status: 'verified', dif_code: dif } : f
         )
       );
       showToast(`✅ ${farmer.farmer_name} — ${t.verified} (DIF: ${dif})`);
+    } else {
+      showToast(t.error);
+    }
+
+    setProcessing(null);
+  };
+
+  const handleReject = async (farmer) => {
+    setProcessing(farmer.id);
+
+    const { error } = await supabase
+      .from('farmers')
+      .update({ is_verified: false, verification_status: 'rejected', dif_code: null })
+      .eq('id', farmer.id);
+
+    if (!error) {
+      setFarmers((prev) =>
+        prev.map((f) =>
+          f.id === farmer.id ? { ...f, is_verified: false, verification_status: 'rejected', dif_code: null } : f
+        )
+      );
+      showToast(`❌ ${farmer.farmer_name} — ${t.rejected}`);
     } else {
       showToast(t.error);
     }
@@ -78,8 +100,14 @@ export default function AdminFarmersPage() {
     );
   }
 
-  const unverified = farmers.filter((f) => !f.is_verified);
-  const verified   = farmers.filter((f) => f.is_verified);
+  // Categorize farmers
+  const unverified = farmers.filter(
+    (f) => !f.is_verified && f.verification_status !== 'rejected'
+  );
+  const verified = farmers.filter((f) => f.is_verified);
+  const rejected = farmers.filter(
+    (f) => !f.is_verified && f.verification_status === 'rejected'
+  );
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#0a0f0a] px-4 py-10">
@@ -94,7 +122,7 @@ export default function AdminFarmersPage() {
             {t.back}
           </button>
           <h1 className="text-2xl font-bold text-white">{t.allFarmers}</h1>
-          <span className="ml-auto px-3 py-1 bg-[#1a2e1a] rounded-full text-green-400 text-sm">
+          <span className="ml-auto px-3 py-1 bg-[#1a2e1a] rounded-full text-green-400 text-sm font-semibold">
             {farmers.length}
           </span>
         </div>
@@ -114,11 +142,11 @@ export default function AdminFarmersPage() {
           </div>
         )}
 
-        {/* ── Unverified section ── */}
+        {/* ── Pending verification section ── */}
         {unverified.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-sm font-semibold text-yellow-500 uppercase tracking-wider mb-4">
-              ⏳ {t.notVerified} ({unverified.length})
+            <h2 className="text-sm font-semibold text-yellow-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span>⏳</span> {t.notVerified} ({unverified.length})
             </h2>
             <div className="space-y-4">
               {unverified.map((farmer) => (
@@ -131,7 +159,9 @@ export default function AdminFarmersPage() {
                     setDifInputs((prev) => ({ ...prev, [farmer.id]: val.toUpperCase() }))
                   }
                   onVerify={() => handleVerify(farmer)}
+                  onReject={() => handleReject(farmer)}
                   processing={processingId === farmer.id}
+                  status="pending"
                 />
               ))}
             </div>
@@ -140,13 +170,43 @@ export default function AdminFarmersPage() {
 
         {/* ── Verified section ── */}
         {verified.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wider mb-4">
-              ✅ {t.verified} ({verified.length})
+          <section className="mb-10">
+            <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span>✅</span> {t.verified} ({verified.length})
             </h2>
             <div className="space-y-3">
               {verified.map((farmer) => (
-                <FarmerCard key={farmer.id} farmer={farmer} t={t} verified />
+                <FarmerCard
+                  key={farmer.id}
+                  farmer={farmer}
+                  t={t}
+                  status="verified"
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Rejected section ── */}
+        {rejected.length > 0 && (
+          <section>
+            <h2 className="text-sm font-semibold text-red-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span>❌</span> {t.rejected} ({rejected.length})
+            </h2>
+            <div className="space-y-3">
+              {rejected.map((farmer) => (
+                <FarmerCard
+                  key={farmer.id}
+                  farmer={farmer}
+                  t={t}
+                  status="rejected"
+                  difInput={difInputs[farmer.id] || ''}
+                  onDifChange={(val) =>
+                    setDifInputs((prev) => ({ ...prev, [farmer.id]: val.toUpperCase() }))
+                  }
+                  onVerify={() => handleVerify(farmer)}
+                  processing={processingId === farmer.id}
+                />
               ))}
             </div>
           </section>
@@ -156,16 +216,29 @@ export default function AdminFarmersPage() {
   );
 }
 
-function FarmerCard({ farmer, t, difInput, onDifChange, onVerify, processing, verified = false }) {
+function FarmerCard({
+  farmer,
+  t,
+  difInput,
+  onDifChange,
+  onVerify,
+  onReject,
+  processing,
+  status = 'pending',
+}) {
   return (
     <div
       className={`bg-[#111811] border rounded-2xl p-5 ${
-        verified ? 'border-green-900/60' : 'border-[#1e3a1e]'
+        status === 'verified'
+          ? 'border-green-900/60'
+          : status === 'rejected'
+          ? 'border-red-950/60'
+          : 'border-[#1e3a1e]'
       }`}
     >
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         {/* Farmer info */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-3">
             {/* Avatar */}
             <div className="w-11 h-11 rounded-full bg-green-900/50 border border-green-800 flex items-center justify-center text-lg font-bold text-green-300 shrink-0">
@@ -177,9 +250,13 @@ function FarmerCard({ farmer, t, difInput, onDifChange, onVerify, processing, ve
             </div>
             {/* Status badge */}
             <div className="shrink-0">
-              {verified ? (
+              {status === 'verified' ? (
                 <span className="px-2.5 py-1 bg-green-900/40 text-green-400 border border-green-700 rounded-full text-xs font-semibold">
                   ✅ {t.verified}
+                </span>
+              ) : status === 'rejected' ? (
+                <span className="px-2.5 py-1 bg-red-900/40 text-red-400 border border-red-700 rounded-full text-xs font-semibold">
+                  ❌ {t.rejected}
                 </span>
               ) : (
                 <span className="px-2.5 py-1 bg-yellow-900/40 text-yellow-400 border border-yellow-700 rounded-full text-xs font-semibold">
@@ -208,9 +285,40 @@ function FarmerCard({ farmer, t, difInput, onDifChange, onVerify, processing, ve
           </div>
         </div>
 
-        {/* Verify action */}
-        {!verified && (
-          <div className="flex items-center gap-2 sm:w-64">
+        {/* Actions for Pending Farmers */}
+        {status === 'pending' && (
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:w-80 shrink-0 w-full">
+            <input
+              type="text"
+              maxLength={10}
+              placeholder={t.difCodePlaceholder}
+              value={difInput}
+              onChange={(e) => onDifChange(e.target.value)}
+              className="flex-1 bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 font-mono uppercase"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={onReject}
+                disabled={processing}
+                className="px-3.5 py-2.5 bg-red-950/60 border border-red-900 hover:bg-red-900/60 text-red-400 font-semibold rounded-xl text-sm transition-all active:scale-95 disabled:opacity-50"
+                title={t.rejectVerification}
+              >
+                {processing ? '…' : `✗ ${t.rejectVerification}`}
+              </button>
+              <button
+                onClick={onVerify}
+                disabled={processing}
+                className="px-4 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold rounded-xl text-sm whitespace-nowrap transition-all active:scale-95 shadow-md shadow-green-950/50"
+              >
+                {processing ? '…' : `✓ ${t.verify}`}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Re-verify action for Rejected Farmers */}
+        {status === 'rejected' && (
+          <div className="flex items-center gap-2 sm:w-72 shrink-0 w-full">
             <input
               type="text"
               maxLength={10}
@@ -222,9 +330,9 @@ function FarmerCard({ farmer, t, difInput, onDifChange, onVerify, processing, ve
             <button
               onClick={onVerify}
               disabled={processing}
-              className="px-4 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold rounded-xl text-sm whitespace-nowrap transition-all active:scale-95"
+              className="px-4 py-2.5 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-bold rounded-xl text-sm whitespace-nowrap transition-all active:scale-95"
             >
-              {processing ? '…' : t.verify}
+              {processing ? '…' : `✓ ${t.reopenVerification}`}
             </button>
           </div>
         )}

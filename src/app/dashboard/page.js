@@ -101,12 +101,17 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Verification Banner ── */}
-        {(!farmer?.is_verified || !farmer?.dif_code) && (
+        {farmer?.verification_status === 'rejected' ? (
+          <div className="mb-8 p-4 bg-red-950/40 border border-red-800 rounded-2xl flex items-start gap-3 text-red-400">
+            <span className="text-2xl mt-0.5">❌</span>
+            <p className="text-sm leading-relaxed">{t.rejectedNotice}</p>
+          </div>
+        ) : (!farmer?.is_verified || !farmer?.dif_code) ? (
           <div className="mb-8 p-4 bg-yellow-950/30 border border-yellow-800/60 rounded-2xl flex items-start gap-3 text-yellow-400">
             <span className="text-2xl mt-0.5">⏳</span>
             <p className="text-sm leading-relaxed">{t.pendingVerification}</p>
           </div>
-        )}
+        ) : null}
 
         {/* ── Credits Grid ── */}
         <section className="mb-10">
