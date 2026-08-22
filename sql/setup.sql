@@ -11,6 +11,10 @@ ALTER TABLE farmers ADD COLUMN IF NOT EXISTS role         text    DEFAULT 'farme
 ALTER TABLE farmers ADD COLUMN IF NOT EXISTS is_verified  boolean DEFAULT false;
 ALTER TABLE farmers ADD COLUMN IF NOT EXISTS password_hash text;
 
+-- Ensure dif_code defaults to empty string and drops NOT NULL constraint if present
+ALTER TABLE farmers ALTER COLUMN dif_code DROP NOT NULL;
+ALTER TABLE farmers ALTER COLUMN dif_code SET DEFAULT '';
+
 -- Back-fill role for existing rows that have NULL
 UPDATE farmers SET role = 'farmer'   WHERE role IS NULL;
 UPDATE farmers SET is_verified = false WHERE is_verified IS NULL;

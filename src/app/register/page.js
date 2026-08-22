@@ -48,6 +48,7 @@ export default function RegisterPage() {
         phone_number: cleanPhone,
         role: 'farmer',
         is_verified: false,
+        dif_code: '',
         croplens: 0,
         dizmatrix: 0,
         senseorbit: 0,
