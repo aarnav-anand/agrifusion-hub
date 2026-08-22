@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { hashPassword } from '@/lib/auth';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function RegisterPage() {
@@ -13,8 +12,6 @@ export default function RegisterPage() {
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,12 +20,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
-      setError(t.passwordMismatch);
-      return;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    const cleanName = name.trim();
+    const cleanPhone = phone.trim();
+
+    if (!cleanName || !cleanPhone) {
+      setError(t.error);
       return;
     }
 
@@ -39,7 +35,7 @@ export default function RegisterPage() {
       const { data: existing } = await supabase
         .from('farmers')
         .select('id')
-        .eq('phone_number', phone);
+        .eq('phone_number', cleanPhone);
 
       if (existing && existing.length > 0) {
         setError(t.phoneExists);
@@ -47,12 +43,9 @@ export default function RegisterPage() {
         return;
       }
 
-      const hashed = await hashPassword(password);
-
       const { error: insertError } = await supabase.from('farmers').insert({
-        farmer_name: name.trim(),
-        phone_number: phone.trim(),
-        password_hash: hashed,
+        farmer_name: cleanName,
+        phone_number: cleanPhone,
         role: 'farmer',
         is_verified: false,
         croplens: 0,
@@ -64,7 +57,7 @@ export default function RegisterPage() {
       if (insertError) throw insertError;
 
       setSuccess(true);
-      setTimeout(() => router.push('/login'), 3000);
+      setTimeout(() => router.push('/login'), 2500);
     } catch (err) {
       console.error(err);
       setError(t.error);
@@ -123,32 +116,6 @@ export default function RegisterPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 placeholder="9876543210"
-                className="w-full bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1.5 font-medium">{t.password}</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                placeholder="••••••••"
-                className="w-full bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1.5 font-medium">{t.confirmPassword}</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
-                placeholder="••••••••"
                 className="w-full bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm"
               />
             </div>

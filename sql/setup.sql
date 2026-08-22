@@ -50,10 +50,9 @@ CREATE TABLE IF NOT EXISTS carts (
   reviewed_by         text
 );
 
--- ── STEP 4: Create your admin account ───────────────────────
--- 1. Open the AgriFusion Hub website and register normally
---    using your desired phone number & password.
--- 2. Then run the UPDATE below (replace the phone number).
+-- ── STEP 4: Set Up Admin Account ──────────────────────────────
+-- 1. Open AgriFusion Hub and Register with your Name & Phone number.
+-- 2. Run the UPDATE statement below in Supabase SQL Editor:
 
 -- UPDATE farmers
 -- SET role = 'admin', is_verified = true

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { hashPassword } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -14,43 +13,49 @@ export default function LoginPage() {
   const router = useRouter();
 
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const cleanPhone = phone.trim();
+    if (!cleanPhone) {
+      setError(t.invalidCredentials);
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const hashed = await hashPassword(password);
-
+      // Query database by phone number
       const { data, error: dbError } = await supabase
         .from('farmers')
         .select('*')
-        .eq('phone_number', phone)
-        .eq('password_hash', hashed)
-        .maybeSingle();
+        .eq('phone_number', cleanPhone);
 
       if (dbError) throw dbError;
 
-      if (!data) {
+      if (!data || data.length === 0) {
         setError(t.invalidCredentials);
         setLoading(false);
         return;
       }
 
+      // If multiple records exist (e.g. historical data), pick the latest created or first match
+      const userRecord = data[0];
+
       login({
-        id: data.id,
-        name: data.farmer_name,
-        phone: data.phone_number,
-        role: data.role ?? 'farmer',
-        is_verified: data.is_verified ?? false,
-        dif_code: data.dif_code ?? null,
+        id: userRecord.id,
+        name: userRecord.farmer_name,
+        phone: userRecord.phone_number,
+        role: userRecord.role ?? 'farmer',
+        is_verified: userRecord.is_verified ?? false,
+        dif_code: userRecord.dif_code ?? null,
       });
 
-      router.replace(data.role === 'admin' ? '/admin' : '/dashboard');
+      router.replace(userRecord.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       console.error(err);
       setError(t.error);
@@ -87,20 +92,6 @@ export default function LoginPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 placeholder="9876543210"
-                className="w-full bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1.5 font-medium">
-                {t.password}
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
                 className="w-full bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm"
               />
             </div>

@@ -24,21 +24,18 @@ export const translations = {
     farmerLogin: 'Farmer Login',
     adminLogin: 'Admin Login',
     phoneNumber: 'Phone Number',
-    password: 'Password',
     loginSubmit: 'Login',
-    invalidCredentials: 'Invalid phone number or password',
+    invalidCredentials: 'No account found with this phone number. Please register first.',
     noAccount: "Don't have an account?",
     registerHere: 'Register here',
 
     // Auth — Register
     createAccount: 'Create Your Account',
     fullName: 'Full Name',
-    confirmPassword: 'Confirm Password',
     registerBtn: 'Register',
     registrationSuccess:
       'Registration successful! Please wait for admin verification.',
     redirectingToLogin: 'Redirecting to login…',
-    passwordMismatch: 'Passwords do not match.',
     phoneExists: 'This phone number is already registered.',
 
     // Dashboard
@@ -132,21 +129,18 @@ export const translations = {
     farmerLogin: 'किसान लॉगिन',
     adminLogin: 'एडमिन लॉगिन',
     phoneNumber: 'फ़ोन नंबर',
-    password: 'पासवर्ड',
     loginSubmit: 'लॉगिन करें',
-    invalidCredentials: 'गलत फ़ोन नंबर या पासवर्ड',
+    invalidCredentials: 'इस फ़ोन नंबर से कोई खाता नहीं मिला। कृपया पहले रजिस्टर करें।',
     noAccount: 'खाता नहीं है?',
     registerHere: 'यहाँ रजिस्टर करें',
 
     // Auth — Register
     createAccount: 'अपना खाता बनाएं',
     fullName: 'पूरा नाम',
-    confirmPassword: 'पासवर्ड की पुष्टि करें',
     registerBtn: 'रजिस्टर करें',
     registrationSuccess:
       'रजिस्ट्रेशन सफल! कृपया एडमिन सत्यापन की प्रतीक्षा करें।',
     redirectingToLogin: 'लॉगिन पेज पर जा रहे हैं…',
-    passwordMismatch: 'पासवर्ड मेल नहीं खाते।',
     phoneExists: 'यह फ़ोन नंबर पहले से रजिस्टर है।',
 
     // Dashboard
