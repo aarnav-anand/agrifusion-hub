@@ -127,7 +127,7 @@ export default function AdminFarmersPage() {
           </button>
           <h1 className="text-2xl font-bold text-white">{t.allFarmers}</h1>
           <span className="ml-auto px-3 py-1 bg-[#1a2e1a] rounded-full text-green-400 text-sm font-semibold">
-            {farmers.length}
+            {verified.length}
           </span>
         </div>
 

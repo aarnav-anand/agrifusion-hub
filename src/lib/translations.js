@@ -73,7 +73,7 @@ export const translations = {
 
     // Admin — Dashboard
     adminDashboard: 'Admin Dashboard',
-    totalFarmers: 'Total Farmers',
+    totalFarmers: 'Verified Farmers',
     pendingFarmers: 'Pending Verification',
     pendingCarts: 'Pending Carts',
     manageFarmers: 'Manage Farmers',
@@ -187,7 +187,7 @@ export const translations = {
 
     // Admin — Dashboard
     adminDashboard: 'एडमिन डैशबोर्ड',
-    totalFarmers: 'कुल किसान',
+    totalFarmers: 'सत्यापित किसान',
     pendingFarmers: 'सत्यापन लंबित',
     pendingCarts: 'लंबित कार्ट',
     manageFarmers: 'किसान प्रबंधन',

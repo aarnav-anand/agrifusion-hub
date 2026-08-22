@@ -31,12 +31,15 @@ export default function AdminPage() {
       supabase.from('carts').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     ]);
 
-    const total = farmersData?.length ?? 0;
+    const verified = farmersData?.filter(
+      (f) => f.is_verified && f.dif_code?.toUpperCase() !== 'RJCT'
+    ).length ?? 0;
+
     const pending = farmersData?.filter(
       (f) => !f.is_verified && f.dif_code?.toUpperCase() !== 'RJCT'
     ).length ?? 0;
 
-    setStats({ total, pending, pendingCarts: pendingCarts ?? 0 });
+    setStats({ total: verified, pending, pendingCarts: pendingCarts ?? 0 });
     setLoading(false);
   };
 
