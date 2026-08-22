@@ -22,20 +22,29 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    } catch (_) {}
     setUser(userData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
   };
 
   const logout = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (_) {}
     setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
   };
 
   // Allow components to refresh user data (e.g. after verification)
   const refreshUser = (partial) => {
-    const updated = { ...user, ...partial };
-    setUser(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setUser((prevUser) => {
+      if (!prevUser) return null; // Prevent resurrecting user if logged out
+      const updated = { ...prevUser, ...partial };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
   };
 
   return (

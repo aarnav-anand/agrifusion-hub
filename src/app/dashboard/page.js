@@ -37,6 +37,7 @@ export default function DashboardPage() {
   }, [user]);
 
   const fetchData = async () => {
+    if (!user?.id) return;
     const [{ data: farmerRow }, { data: cartRows }] = await Promise.all([
       supabase.from('farmers').select('*').eq('id', user.id).single(),
       supabase.from('carts').select('*').eq('farmer_id', user.id).order('created_at', { ascending: false }),
