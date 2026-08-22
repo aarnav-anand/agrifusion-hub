@@ -48,20 +48,25 @@ export default function RegisterPage() {
         phone_number: cleanPhone,
         role: 'farmer',
         is_verified: false,
-        dif_code: '',
+        dif_code: null,
         croplens: 0,
         dizmatrix: 0,
         senseorbit: 0,
         quallix: 0,
       });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Registration error:', insertError);
+        setError(insertError.message || t.error);
+        setLoading(false);
+        return;
+      }
 
       setSuccess(true);
       setTimeout(() => router.push('/login'), 2500);
     } catch (err) {
       console.error(err);
-      setError(t.error);
+      setError(err?.message || t.error);
     }
 
     setLoading(false);
