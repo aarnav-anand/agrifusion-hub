@@ -53,18 +53,19 @@ export default function AdminFarmersPage() {
 
     const { error } = await supabase
       .from('farmers')
-      .update({ is_verified: true, verification_status: 'verified', dif_code: dif })
+      .update({ is_verified: true, dif_code: dif })
       .eq('id', farmer.id);
 
     if (!error) {
       setFarmers((prev) =>
         prev.map((f) =>
-          f.id === farmer.id ? { ...f, is_verified: true, verification_status: 'verified', dif_code: dif } : f
+          f.id === farmer.id ? { ...f, is_verified: true, dif_code: dif } : f
         )
       );
       showToast(`✅ ${farmer.farmer_name} — ${t.verified} (DIF: ${dif})`);
     } else {
-      showToast(t.error);
+      console.error('Verify error:', error);
+      showToast(error.message || t.error);
     }
 
     setProcessing(null);
@@ -75,18 +76,19 @@ export default function AdminFarmersPage() {
 
     const { error } = await supabase
       .from('farmers')
-      .update({ is_verified: false, verification_status: 'rejected', dif_code: null })
+      .update({ is_verified: false, dif_code: 'RJCT' })
       .eq('id', farmer.id);
 
     if (!error) {
       setFarmers((prev) =>
         prev.map((f) =>
-          f.id === farmer.id ? { ...f, is_verified: false, verification_status: 'rejected', dif_code: null } : f
+          f.id === farmer.id ? { ...f, is_verified: false, dif_code: 'RJCT' } : f
         )
       );
       showToast(`❌ ${farmer.farmer_name} — ${t.rejected}`);
     } else {
-      showToast(t.error);
+      console.error('Reject error:', error);
+      showToast(error.message || t.error);
     }
 
     setProcessing(null);
@@ -102,16 +104,18 @@ export default function AdminFarmersPage() {
 
   // Categorize farmers
   const unverified = farmers.filter(
-    (f) => !f.is_verified && f.verification_status !== 'rejected'
+    (f) => !f.is_verified && f.dif_code?.toUpperCase() !== 'RJCT'
   );
-  const verified = farmers.filter((f) => f.is_verified);
+  const verified = farmers.filter(
+    (f) => f.is_verified && f.dif_code?.toUpperCase() !== 'RJCT'
+  );
   const rejected = farmers.filter(
-    (f) => !f.is_verified && f.verification_status === 'rejected'
+    (f) => f.dif_code?.toUpperCase() === 'RJCT'
   );
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#0a0f0a] px-4 py-10">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8 flex-wrap">
@@ -236,16 +240,16 @@ function FarmerCard({
           : 'border-[#1e3a1e]'
       }`}
     >
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
         {/* Farmer info */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 w-full">
           <div className="flex items-center gap-3 mb-3">
             {/* Avatar */}
             <div className="w-11 h-11 rounded-full bg-green-900/50 border border-green-800 flex items-center justify-center text-lg font-bold text-green-300 shrink-0">
               {farmer.farmer_name?.[0]?.toUpperCase() ?? '?'}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-white font-semibold truncate">{farmer.farmer_name}</div>
+              <div className="text-white font-semibold truncate text-base">{farmer.farmer_name}</div>
               <div className="text-gray-400 text-sm">📱 {farmer.phone_number}</div>
             </div>
             {/* Status badge */}
@@ -287,20 +291,20 @@ function FarmerCard({
 
         {/* Actions for Pending Farmers */}
         {status === 'pending' && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:w-80 shrink-0 w-full">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0 w-full lg:w-auto">
             <input
               type="text"
               maxLength={10}
               placeholder={t.difCodePlaceholder}
               value={difInput}
               onChange={(e) => onDifChange(e.target.value)}
-              className="flex-1 bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 font-mono uppercase"
+              className="w-full sm:w-44 bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 font-mono uppercase"
             />
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={onReject}
                 disabled={processing}
-                className="px-3.5 py-2.5 bg-red-950/60 border border-red-900 hover:bg-red-900/60 text-red-400 font-semibold rounded-xl text-sm transition-all active:scale-95 disabled:opacity-50"
+                className="px-3.5 py-2.5 whitespace-nowrap bg-red-950/70 border border-red-800 hover:bg-red-900/80 text-red-400 font-semibold rounded-xl text-sm transition-all active:scale-95 disabled:opacity-50"
                 title={t.rejectVerification}
               >
                 {processing ? '…' : `✗ ${t.rejectVerification}`}
@@ -308,7 +312,7 @@ function FarmerCard({
               <button
                 onClick={onVerify}
                 disabled={processing}
-                className="px-4 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold rounded-xl text-sm whitespace-nowrap transition-all active:scale-95 shadow-md shadow-green-950/50"
+                className="px-4 py-2.5 whitespace-nowrap bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-md shadow-green-950/50"
               >
                 {processing ? '…' : `✓ ${t.verify}`}
               </button>
@@ -318,19 +322,19 @@ function FarmerCard({
 
         {/* Re-verify action for Rejected Farmers */}
         {status === 'rejected' && (
-          <div className="flex items-center gap-2 sm:w-72 shrink-0 w-full">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0 w-full lg:w-auto">
             <input
               type="text"
               maxLength={10}
               placeholder={t.difCodePlaceholder}
               value={difInput}
               onChange={(e) => onDifChange(e.target.value)}
-              className="flex-1 bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 font-mono uppercase"
+              className="w-full sm:w-44 bg-[#0a0f0a] border border-[#1e3a1e] rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 font-mono uppercase"
             />
             <button
               onClick={onVerify}
               disabled={processing}
-              className="px-4 py-2.5 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-bold rounded-xl text-sm whitespace-nowrap transition-all active:scale-95"
+              className="px-4 py-2.5 whitespace-nowrap bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-all active:scale-95"
             >
               {processing ? '…' : `✓ ${t.reopenVerification}`}
             </button>
