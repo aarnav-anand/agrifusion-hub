@@ -24,15 +24,19 @@ export default function AdminPage() {
 
   const fetchStats = async () => {
     const [
-      { count: total },
-      { count: pending },
+      { data: farmersData },
       { count: pendingCarts },
     ] = await Promise.all([
-      supabase.from('farmers').select('*', { count: 'exact', head: true }).eq('role', 'farmer'),
-      supabase.from('farmers').select('*', { count: 'exact', head: true }).eq('role', 'farmer').eq('is_verified', false),
+      supabase.from('farmers').select('id, is_verified, dif_code').eq('role', 'farmer'),
       supabase.from('carts').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     ]);
-    setStats({ total: total ?? 0, pending: pending ?? 0, pendingCarts: pendingCarts ?? 0 });
+
+    const total = farmersData?.length ?? 0;
+    const pending = farmersData?.filter(
+      (f) => !f.is_verified && f.dif_code?.toUpperCase() !== 'RJCT'
+    ).length ?? 0;
+
+    setStats({ total, pending, pendingCarts: pendingCarts ?? 0 });
     setLoading(false);
   };
 
