@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function RegisterPage() {
   const { t } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState('');
@@ -15,6 +17,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Auto-redirect if user is already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(user.role === 'admin' ? '/admin' : '/dashboard');
+    }
+  }, [user, authLoading, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
