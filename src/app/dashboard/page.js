@@ -90,7 +90,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {farmer?.is_verified && (
+          {farmer?.is_verified && farmer?.dif_code && (
             <Link
               href="/dashboard/create-cart"
               className="px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shrink-0"
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Verification Banner ── */}
-        {!farmer?.is_verified && (
+        {(!farmer?.is_verified || !farmer?.dif_code) && (
           <div className="mb-8 p-4 bg-yellow-950/30 border border-yellow-800/60 rounded-2xl flex items-start gap-3 text-yellow-400">
             <span className="text-2xl mt-0.5">⏳</span>
             <p className="text-sm leading-relaxed">{t.pendingVerification}</p>

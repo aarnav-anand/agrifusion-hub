@@ -28,6 +28,11 @@ export const translations = {
     invalidCredentials: 'No account found with this phone number. Please register first.',
     noAccount: "Don't have an account?",
     registerHere: 'Register here',
+    enterDifTitle: 'Enter Your DIF Code',
+    enterDifDesc: 'A DIF code has been assigned to your account. Enter your 4-character DIF code to complete login.',
+    difPlaceholder: '4-character DIF (e.g. AB27)',
+    verifyLogin: 'Verify & Login',
+    incorrectDif: 'Incorrect DIF code. Please try again.',
 
     // Auth — Register
     createAccount: 'Create Your Account',
@@ -133,6 +138,11 @@ export const translations = {
     invalidCredentials: 'इस फ़ोन नंबर से कोई खाता नहीं मिला। कृपया पहले रजिस्टर करें।',
     noAccount: 'खाता नहीं है?',
     registerHere: 'यहाँ रजिस्टर करें',
+    enterDifTitle: 'अपना DIF कोड दर्ज करें',
+    enterDifDesc: 'आपके खाते को एक DIF कोड आवंटित किया गया है। लॉगिन पूरा करने के लिए अपना 4-अक्षरों का DIF कोड दर्ज करें।',
+    difPlaceholder: '4-अक्षरों का DIF (जैसे AB27)',
+    verifyLogin: 'सत्यापित करें और लॉगिन करें',
+    incorrectDif: 'गलत DIF कोड। कृपया पुनः प्रयास करें।',
 
     // Auth — Register
     createAccount: 'अपना खाता बनाएं',
