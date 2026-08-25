@@ -10,10 +10,10 @@ const SOLUTIONS = [
   { key: 'croplens',   label: 'CropLens',   icon: '🌿', border: 'border-green-700/50',  bg: 'bg-green-950/20'  },
   { key: 'dizmatrix',  label: 'DizMatrix',  icon: '🧬', border: 'border-blue-700/50',   bg: 'bg-blue-950/20'   },
   { key: 'senseorbit', label: 'SenseOrbit', icon: '🛰️', border: 'border-purple-700/50', bg: 'bg-purple-950/20' },
-  { key: 'quallix',    label: 'Quallis',    icon: '✅', border: 'border-amber-700/50',  bg: 'bg-amber-950/20'  },
+  { key: 'quallis',    label: 'Quallis',    icon: '✅', border: 'border-amber-700/50',  bg: 'bg-amber-950/20'  },
 ];
 
-const EMPTY_CREDITS = { croplens: 0, dizmatrix: 0, senseorbit: 0, quallix: 0 };
+const EMPTY_CREDITS = { croplens: 0, dizmatrix: 0, senseorbit: 0, quallis: 0 };
 
 export default function CreateCartPage() {
   const { user } = useAuth();
@@ -63,7 +63,7 @@ export default function CreateCartPage() {
       croplens_credits:   credits.croplens,
       dizmatrix_credits:  credits.dizmatrix,
       senseorbit_credits: credits.senseorbit,
-      quallix_credits:    credits.quallix,
+      quallis_credits:    credits.quallis,
       total_cost:         totalCost,
       status:             'pending',
     });

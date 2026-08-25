@@ -38,7 +38,7 @@ const SOLUTIONS = [
     border: 'border-purple-700/40 hover:border-purple-500/70',
   },
   {
-    key: 'quallix',
+    key: 'quallis',
     name: 'Quallis',
     icon: '✅',
     descEn: 'Crop quality grading and assessment platform',

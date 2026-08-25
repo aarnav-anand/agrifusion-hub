@@ -8,9 +8,9 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const SOLUTION_LABELS = {
   croplens: 'CropLens', dizmatrix: 'DizMatrix',
-  senseorbit: 'SenseOrbit', quallix: 'Quallis',
+  senseorbit: 'SenseOrbit', quallis: 'Quallis',
 };
-const CREDIT_FIELDS = ['croplens', 'dizmatrix', 'senseorbit', 'quallix'];
+const CREDIT_FIELDS = ['croplens', 'dizmatrix', 'senseorbit', 'quallis'];
 
 const STATUS_STYLES = {
   pending:  'bg-yellow-900/40 text-yellow-400  border-yellow-700',
@@ -49,7 +49,7 @@ export default function AdminCartsPage() {
       .from('carts')
       .select(`
         id, created_at, farmer_id,
-        croplens_credits, dizmatrix_credits, senseorbit_credits, quallix_credits,
+        croplens_credits, dizmatrix_credits, senseorbit_credits, quallis_credits,
         total_cost, status, reviewed_at, reviewed_by,
         farmer:farmer_id ( farmer_name, phone_number, dif_code )
       `)
@@ -85,7 +85,7 @@ export default function AdminCartsPage() {
     // 2. Fetch current farmer credits
     const { data: farmerRow, error: farmerErr } = await supabase
       .from('farmers')
-      .select('croplens, dizmatrix, senseorbit, quallix')
+      .select('croplens, dizmatrix, senseorbit, quallis')
       .eq('id', cart.farmer_id)
       .single();
 
@@ -96,7 +96,7 @@ export default function AdminCartsPage() {
       croplens:   (farmerRow.croplens   ?? 0) + (cart.croplens_credits   ?? 0),
       dizmatrix:  (farmerRow.dizmatrix  ?? 0) + (cart.dizmatrix_credits  ?? 0),
       senseorbit: (farmerRow.senseorbit ?? 0) + (cart.senseorbit_credits ?? 0),
-      quallix:    (farmerRow.quallix    ?? 0) + (cart.quallix_credits    ?? 0),
+      quallis:    (farmerRow.quallis    ?? 0) + (cart.quallis_credits    ?? 0),
     }).eq('id', cart.farmer_id);
 
     setCarts((prev) =>

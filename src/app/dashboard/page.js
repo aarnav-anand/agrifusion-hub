@@ -11,7 +11,7 @@ const SOLUTIONS = [
   { key: 'croplens',   label: 'CropLens',   icon: '🌿', url: 'https://croplens.streamlit.app',    border: 'border-green-700/50',  bg: 'bg-green-950/20'  },
   { key: 'dizmatrix',  label: 'DizMatrix',  icon: '🧬', url: 'https://dizmatrix.vercel.app',       border: 'border-blue-700/50',   bg: 'bg-blue-950/20'   },
   { key: 'senseorbit', label: 'SenseOrbit', icon: '🛰️', url: 'https://senseorbit-web.vercel.app',  border: 'border-purple-700/50', bg: 'bg-purple-950/20' },
-  { key: 'quallix',    label: 'Quallis',    icon: '✅', url: 'https://quallis.vercel.app',          border: 'border-amber-700/50',  bg: 'bg-amber-950/20'  },
+  { key: 'quallis',    label: 'Quallis',    icon: '✅', url: 'https://quallis.vercel.app',          border: 'border-amber-700/50',  bg: 'bg-amber-950/20'  },
 ];
 
 const STATUS_STYLES = {

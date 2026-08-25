@@ -6,10 +6,10 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
-const CREDIT_KEYS = ['croplens', 'dizmatrix', 'senseorbit', 'quallix'];
+const CREDIT_KEYS = ['croplens', 'dizmatrix', 'senseorbit', 'quallis'];
 const CREDIT_LABELS = {
   croplens: 'CropLens', dizmatrix: 'DizMatrix',
-  senseorbit: 'SenseOrbit', quallix: 'Quallis',
+  senseorbit: 'SenseOrbit', quallis: 'Quallis',
 };
 
 export default function AdminFarmersPage() {

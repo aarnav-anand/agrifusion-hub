@@ -61,7 +61,7 @@ export default function RegisterPage() {
         croplens: 0,
         dizmatrix: 0,
         senseorbit: 0,
-        quallix: 0,
+        quallis: 0,
       });
 
       if (insertError) {
